@@ -1,0 +1,126 @@
+DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List Widget</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f7f7f7;
+      font-family: Arial, sans-serif;
+    }
+    .todo-container {
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+    }
+    .todo-container h3 {
+      margin: 0 0 10px;
+      text-align: center;
+      color: #333;
+    }
+    .todo-list {
+      list-style: none;
+      padding: 0;
+    }
+    .todo-list li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .todo-list li input[type="checkbox"] {
+      margin-right: 10px;
+    }
+    .add-task {
+      display: flex;
+      margin-top: 15px;
+    }
+    .add-task input[type="text"] {
+      flex: 1;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .add-task button {
+      padding: 5px 10px;
+      margin-left: 5px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .add-task button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="todo-container">
+    <h3>Today's To-Do List</h3>
+    <ul class="todo-list" id="todo-list">
+      <!-- Default tasks -->
+      <li><input type="checkbox"> Task 1</li>
+      <li><input type="checkbox"> Task 2</li>
+      <li><input type="checkbox"> Task 3</li>
+      <li><input type="checkbox"> Task 4</li>
+    </ul>
+    <div class="add-task">
+      <input type="text" id="new-task" placeholder="Add new task">
+      <button id="add-task-btn">Add</button>
+    </div>
+  </div>
+
+  <script>
+    // Recupera gli elementi della lista
+    const todoList = document.getElementById('todo-list');
+    const newTaskInput = document.getElementById('new-task');
+    const addTaskBtn = document.getElementById('add-task-btn');
+
+    // Aggiunge un nuovo task
+    addTaskBtn.addEventListener('click', () => {
+      const taskText = newTaskInput.value.trim();
+      if (taskText) {
+        const newTask = document.createElement('li');
+        newTask.innerHTML = `<input type="checkbox"> ${taskText}`;
+        todoList.appendChild(newTask);
+        newTaskInput.value = '';
+      }
+    });
+
+    // Salva lo stato dei task
+    function saveTasks() {
+      const tasks = [];
+      todoList.querySelectorAll('li').forEach((task) => {
+        const text = task.textContent.trim();
+        const completed = task.querySelector('input[type="checkbox"]').checked;
+        tasks.push({ text, completed });
+      });
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    // Carica i task salvati
+    function loadTasks() {
+      const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+      tasks.forEach(({ text, completed }) => {
+        const task = document.createElement('li');
+        task.innerHTML = `<input type="checkbox" ${completed ? 'checked' : ''}> ${text}`;
+        todoList.appendChild(task);
+      });
+    }
+
+    // Aggiunge eventi per il salvataggio
+    todoList.addEventListener('change', saveTasks);
+
+    // Carica i task all'avvio
+    loadTasks();
+  </script>
+</body>
+</html>
