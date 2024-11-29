@@ -51,7 +51,7 @@
     .add-task button {
       padding: 5px 10px;
       margin-left: 5px;
-      background-color: #007bff;
+      background-color: #A17E89;
       color: #fff;
       border: none;
       border-radius: 5px;
@@ -77,18 +77,58 @@
 
   <script>
     // Recupera gli elementi della lista
-    const todoList = document.getElementById('todo-list');
-    const newTaskInput = document.getElementById('new-task');
-    const addTaskBtn = document.getElementById('add-task-btn');
+const todoList = document.getElementById('todo-list');
+const newTaskInput = document.getElementById('new-task');
+const addTaskBtn = document.getElementById('add-task-btn');
 
-    // Aggiunge un nuovo task
-    addTaskBtn.addEventListener('click', () => {
-      const taskText = newTaskInput.value.trim();
-      if (taskText) {
-        const newTask = document.createElement('li');
-        newTask.innerHTML = `<input type="checkbox"> ${taskText}`;
-        todoList.appendChild(newTask);
-        newTaskInput.value = '';
+// Predefinire i task (saranno caricati solo se LocalStorage è vuoto)
+const defaultTasks = [
+  { text: "Task 1", completed: false },
+  { text: "Task 2", completed: false },
+  { text: "Task 3", completed: false },
+  { text: "Task 4", completed: false },
+];
+
+// Carica i task salvati o usa quelli predefiniti
+function loadTasks() {
+  const savedTasks = JSON.parse(localStorage.getItem('tasks'));
+  const tasksToLoad = savedTasks && savedTasks.length > 0 ? savedTasks : defaultTasks;
+
+  tasksToLoad.forEach(({ text, completed }) => {
+    const task = document.createElement('li');
+    task.innerHTML = `<input type="checkbox" ${completed ? 'checked' : ''}> ${text}`;
+    todoList.appendChild(task);
+  });
+}
+
+// Salva i task correnti in LocalStorage
+function saveTasks() {
+  const tasks = [];
+  todoList.querySelectorAll('li').forEach((task) => {
+    const text = task.textContent.trim();
+    const completed = task.querySelector('input[type="checkbox"]').checked;
+    tasks.push({ text, completed });
+  });
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+// Aggiunge un nuovo task
+addTaskBtn.addEventListener('click', () => {
+  const taskText = newTaskInput.value.trim();
+  if (taskText) {
+    const newTask = document.createElement('li');
+    newTask.innerHTML = `<input type="checkbox"> ${taskText}`;
+    todoList.appendChild(newTask);
+    newTaskInput.value = '';
+    saveTasks(); // Salva i task immediatamente dopo l'aggiunta
+  }
+});
+
+// Event listener per salvare lo stato al cambio
+todoList.addEventListener('change', saveTasks);
+
+// Carica i task all'avvio
+loadTasks();
       }
     });
 
